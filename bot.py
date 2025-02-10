@@ -42,6 +42,15 @@ BATCH_SIZE = 10 # количество одновременных подключ
 # Инициализация пустого списка для хранения всех данных
 all_data = []
 
+async def fetch_page(session: aiohttp.ClientSession, skip: int) -> list:
+    params = {"api_key": API_KEY, "$top": TOP, "$skip": skip}
+    async with session.get(URL, params=params) as response:
+        if response.status != 200:
+            print(f"Ошибка запроса (status {response.status}) для $skip={skip}")
+            return []
+        data = await response.json()
+        return data
+
 # Создание асинхронной сессии для выполнения HTTP-запросов
 async with aiohttp.ClientSession() as session:
     # Инициализация переменной для отслеживания текущей страницы
@@ -176,7 +185,7 @@ async def create_forecast(district, param):
 
     data = preprocessed_data.get(district, {}).get(param)
     if data is None or len(data) < 24:
-        retujupyter nbconvert --to script ваш_ноутбук.ipynbrn None, None
+        return None, None
 
     try:
         clean_data = remove_outliers(data)
